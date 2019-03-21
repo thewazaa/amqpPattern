@@ -1,0 +1,32 @@
+{
+  "name": "amqpPattern",
+  "version": "1.0.0",
+  "description": "amqp class to easily manage different kind of patterns with almost no code",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "keywords": [
+    "rabbitMQ",
+    "amqplib",
+    "rpc",
+    "queue",
+    "publish",
+    "subscribe"
+  ],
+  "author": "Josep M. Pons",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.3",
+    "tracer": "^0.9.8",
+    "uuid": "^3.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thewazaa/amqpPattern.git"
+  }
+}
