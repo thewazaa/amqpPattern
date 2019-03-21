@@ -1,4 +1,4 @@
-/*'use strict';
+'use strict';
 
 const assert = require('chai').assert;
 const amqpPattern = require('../index');
@@ -117,4 +117,3 @@ describe('RPC', () => {
     }
   })
 });
-*/

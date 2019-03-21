@@ -4,14 +4,6 @@ const assert = require('chai').assert;
 const amqpPattern = require('../index');
 const logger = require('tracer').colorConsole({level:'debug'});
 
-var x = new amqpPattern('amqp://localhost', logger);
-x.init().then(() => {
-  x.consume("test", async (val) => {
-    console.log(val);
-  });
-});
-
-/*
 describe('init', () => {
   describe('class with logs', () => {
     var server;
@@ -65,4 +57,3 @@ describe('init', () => {
     });
   });
 });
-*/

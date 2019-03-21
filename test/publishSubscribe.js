@@ -1,4 +1,4 @@
-/*'use strict';
+'use strict';
 
 const assert = require('chai').assert;
 const amqpPattern = require('../index');
@@ -125,4 +125,3 @@ describe('publish/subscribe', () => {
     aux(exchange3, "topic", "a.a", "a.*", "a.a", "a.b", 5, 45, 6);
   });
 });
-*/

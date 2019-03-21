@@ -1,4 +1,4 @@
-/*'use strict';
+'use strict';
 
 const assert = require('chai').assert;
 const amqpPattern = require('../index');
@@ -98,4 +98,3 @@ describe('queue', () => {
     aux(queue4, false);
   });
 });
-*/
