@@ -1,6 +1,6 @@
 {
   "name": "amqp_pattern",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "amqp class to easily manage different kind of patterns with almost no code",
   "main": "index.js",
   "scripts": {
