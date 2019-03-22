@@ -4,19 +4,15 @@ const amqp = require('amqplib/callback_api');
 const uuidv1 = require('uuid/v1');
 
 /**
- * amqpPattern class:
+ * amqp_pattern class:
  * Basic class who provides client/server methods to comunicate with a rabbitMQ
  * queue.
+ *
+ * @param  {string}   serverURI URI to connect to an AMQP server
+ * @param  {tracer}   logger    Log generator
  */
-  
 module.exports = class {
 
-  /**
-   * constructor - creates the amqpPattern object
-   *
-   * @param  {string}   serverURI URI to connect to an AMQP server
-   * @param  {tracer}   logger    Log generator
-   */
   constructor(serverURI, logger) {
     this.eLogLevel = Object.freeze({
       "trace": 1,

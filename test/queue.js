@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('chai').assert;
-const amqpPattern = require('../index');
+const amqp_pattern = require('../index');
 
 var test;
 
@@ -14,7 +14,7 @@ function aux(qName, durable, lifeTime, maxItems) {
   var server;
 
   before(async () => {
-    server = new amqpPattern('amqp://localhost');
+    server = new amqp_pattern('amqp://localhost');
     await server.init();
   });
   after(async () => {

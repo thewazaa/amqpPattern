@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('chai').assert;
-const amqpPattern = require('../index');
+const amqp_pattern = require('../index');
 
 const rpc1 = "rpc1";
 const rpc2 = "rpc2";
@@ -13,9 +13,9 @@ describe('RPC', () => {
   var client, server1, server2;
 
   before(async () => {
-    client = new amqpPattern('amqp://localhost');
-    server1 = new amqpPattern('amqp://localhost');
-    server2 = new amqpPattern('amqp://localhost');
+    client = new amqp_pattern('amqp://localhost');
+    server1 = new amqp_pattern('amqp://localhost');
+    server2 = new amqp_pattern('amqp://localhost');
     await client.init();
     await server1.init();
     await server2.init();
