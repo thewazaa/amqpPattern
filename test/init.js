@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('chai').assert;
-const amqpPattern = require('../index');
+const amqp_pattern = require('../index');
 const logger = require('tracer').colorConsole({level:'debug'});
 
 describe('init', () => {
@@ -10,7 +10,7 @@ describe('init', () => {
 
     it('create class', async () => {
       try {
-        server = new amqpPattern('amqp://localhost', logger);
+        server = new amqp_pattern('amqp://localhost', logger);
       } catch (err) {
         assert.fail(err);
       }
@@ -36,7 +36,7 @@ describe('init', () => {
 
     it('create class', async () => {
       try {
-        server = new amqpPattern('amqp://localhost');
+        server = new amqp_pattern('amqp://localhost');
       } catch (err) {
         assert.fail(err);
       }

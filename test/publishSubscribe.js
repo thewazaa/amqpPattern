@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('chai').assert;
-const amqpPattern = require('../index');
+const amqp_pattern = require('../index');
 const logger = require('tracer').colorConsole();
 
 const exchange1 = "exchange1";
@@ -14,7 +14,7 @@ function aux(xName, type, pattern1, pattern2, route1, route2, _t1, _t2, _t1x) {
   var t1 = 0, t2 = 0, t1x = 0;
 
   before(async () => {
-    server = new amqpPattern('amqp://localhost');
+    server = new amqp_pattern('amqp://localhost');
     await server.init();
   });
   after(async () => {

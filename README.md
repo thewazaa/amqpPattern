@@ -1,4 +1,4 @@
-# amqpPattern
+# amqp_pattern
 amqp nodejs class to easily manage different kind of patterns with almost no code
 
 logs are generated through tracer library(https://www.npmjs.com/package/tracer). Check tracer project to configurate your logs
@@ -10,16 +10,24 @@ Right now it has 3 possible patterns managed
 
 *Unit tests require to have rabbitMQ installed on local.*
 
+## historical of changes
+
+* 1.0.2
+  * documentation nomenclature changes to follow npm standards
+  * API documentation
+* 1.0.1 Corrected small unit tests issue
+* 1.0.0 Initial release
+
 ## init / end connection connection
 First is needed to instance the class. At oposite of main amqp class each instance will manage only one channel. It helps to avoid complexity and helps to control different logical elements in a simpler structured way.
 
 ```javascript
 'use strict';
 
-const amqpPattern = require('amqpPattern');
+const amqp_pattern = require('amqp_pattern');
 const logger = require('tracer').colorConsole({level:'debug'});
 
-var x = new amqpPattern('amqp://localhost', logger);
+var x = new amqp_pattern('amqp://localhost', logger);
 x.init().then(async () => {
   x.dispose();
 });
@@ -32,7 +40,7 @@ A simple fifo pattern where the client send items to the queue with no need of a
 
 #### queuing
 ```javascript
-var x = new amqpPattern('amqp://localhost', logger);
+var x = new amqp_pattern('amqp://localhost', logger);
 x.init().then(async () => {
   await x.initQueue("test");
   for (var i = 0; i<100; i++)
@@ -42,7 +50,7 @@ x.init().then(async () => {
 
 #### consume
 ```javascript
-var x = new amqpPattern('amqp://localhost', logger);
+var x = new amqp_pattern('amqp://localhost', logger);
 x.init().then(async () => {
   x.consume("test", async (val) => {
     console.log(val);
@@ -60,7 +68,7 @@ Each one of these queues can have his own consumer, to process the message.
 
 #### publish
 ```javascript
-var x = new amqpPattern('amqp://localhost', logger);
+var x = new amqp_pattern('amqp://localhost', logger);
 x.init().then(async () => {
   await server.initExchange("queue_1", "fanout");
   for (var i = 0; i<100; i++)
@@ -70,7 +78,7 @@ x.init().then(async () => {
 
 #### subscribe
 ```javascript
-var x = new amqpPattern('amqp://localhost', logger);
+var x = new amqp_pattern('amqp://localhost', logger);
 x.init().then(async () => {
   await x.initQueue("queue_1");
   await x.initQueue("queue_2");
@@ -85,7 +93,7 @@ An standard procedure flow through basic client/server interaction.
 
 #### calls
 ```javascript
-var x = new amqpPattern('amqp://localhost', logger);
+var x = new amqp_pattern('amqp://localhost', logger);
 x.init().then(async () => {
   console.log(await x.rpcCall("method", 1));
 });
@@ -93,7 +101,7 @@ x.init().then(async () => {
 
 #### procedure
 ```javascript
-var x = new amqpPattern('amqp://localhost', logger);
+var x = new amqp_pattern('amqp://localhost', logger);
 x.init().then(async () => {
   x.rpcServer("method", async (val) => {
     return val + 1;
