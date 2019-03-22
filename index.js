@@ -275,13 +275,6 @@ module.exports = class {
   // region: mixed queue and publish/subscribe pattern
 
   /**
-   * async consume - attach a queue to a callback method
-   *                 in case of exception, the item is requeud
-   *
-   * @param  {type} qName queue name
-   * @param  {type} cb    callback method
-   */
- /**
   * async initQueue - initialize a queue / creates it
   *
   * @param  {string} qName           queue name
@@ -289,7 +282,7 @@ module.exports = class {
   * @param  {!int}   lifeTime = null queue items timeout in seconds
   * @param  {!int}   maxQueue = null max items we can have in the queue
   */
- async initQueue(qName, durable = true, lifeTime = null, maxQueue = null) {
+  async initQueue(qName, durable = true, lifeTime = null, maxQueue = null) {
    this.log(this.eLogLevel.trace, "initQueue start", [qName, durable,
      lifeTime, maxQueue]);
    try {
@@ -310,8 +303,15 @@ module.exports = class {
      this.log(this.eLogLevel.debug, "initQueue performed", [qName, durable,
      lifeTime, maxQueue]);
    }
- }
+  }
 
+ /**
+  * async consume - attach a queue to a callback method
+  *                 in case of exception, the item is requeud
+  *
+  * @param  {type} qName queue name
+  * @param  {type} cb    callback method
+  */
   async consume(qName, cb) {
     this.log(this.eLogLevel.trace, "consume start", [qName, cb]);
     try {
