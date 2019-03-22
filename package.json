@@ -16,10 +16,7 @@
   ],
   "author": "Josep M. Pons",
   "license": "ISC",
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^6.0.2"
-  },
+  "devDependencies": {},
   "dependencies": {
     "amqplib": "^0.5.3",
     "tracer": "^0.9.8",
