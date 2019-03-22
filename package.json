@@ -1,6 +1,6 @@
 {
   "name": "amqp_pattern",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "amqp class to easily manage different kind of patterns with almost no code",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,8 @@
     "rpc",
     "queue",
     "publish",
-    "subscribe"
+    "subscribe",
+    "strategy"
   ],
   "author": "Josep M. Pons",
   "license": "ISC",

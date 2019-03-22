@@ -165,16 +165,21 @@ module.exports = class {
   /**
    * async initQueue - initialize an exchange / creates it
    *
-   * @param  {string} xName           exchange name
-   * @param  {string} type = 'fanout' exchange type
-   * @param  {!bool}  durable = true  exchange is maintaned when server restarts
+   * @param  {string} xName              exchange name
+   * @param  {string} type = 'fanout'    exchange type
+   * @param  {!bool}  durable = true     exchange is maintaned when server
+   *                                     restarts
+   * @param  {!bool}  autoDelete = false exchange is deleted when bindings
+   *                                     become 0
    */
-  async initExchange(xName, type = 'fanout', durable = true) {
+  async initExchange(xName, type = 'fanout', durable = true,
+  autoDelete = false) {
     this.log(this.eLogLevel.trace, "initExchange start", [xName, type,
       durable]);
     try {
       var parameters = {
-        durable: durable
+        durable: durable,
+        autoDelete: autoDelete
       };
 
       this.ch.assertExchange(xName, type, parameters);
@@ -277,17 +282,19 @@ module.exports = class {
   /**
   * async initQueue - initialize a queue / creates it
   *
-  * @param  {string} qName           queue name
-  * @param  {!bool}  durable = true  queue is maintaned when server restarts
-  * @param  {!int}   lifeTime = null queue items timeout in seconds
-  * @param  {!int}   maxQueue = null max items we can have in the queue
+  * @param  {string} qName              queue name
+  * @param  {!bool}  durable = true     queue is maintaned when server restarts
+  * @param  {!int}   lifeTime = null    queue items timeout in seconds
+  * @param  {!int}   maxQueue = null    max items we can have in the queue
+  * @param  {!bool}  autoDelete = false queue is deleted when bindings become 0
   */
-  async initQueue(qName, durable = true, lifeTime = null, maxQueue = null) {
+  async initQueue(qName, durable = true, lifeTime = null, maxQueue = null, autoDelete = false) {
    this.log(this.eLogLevel.trace, "initQueue start", [qName, durable,
      lifeTime, maxQueue]);
    try {
      var parameters = {
-       durable: durable
+       durable: durable,
+       autoDelete: autoDelete
      };
      if (lifeTime != null)
        parameters["messageTtl"] = lifeTime * 1000;
@@ -348,7 +355,7 @@ module.exports = class {
   // region: rpc pattern
 
   /**
-   * async rpcServer - initializate and RPC method through AMQP
+   * async rpcServer - initializate an RPC method through AMQP
    *
    * @param  {string}   qName function name
    * @param  {function} cb    function itself.
@@ -360,10 +367,7 @@ module.exports = class {
     try {
       var it = this;
 
-      this.ch.assertQueue(qName, {
-        durable: false,
-        autoDelete: true
-      });
+      await this.initQueue(qName, false, null, null, true);
       this.ch.consume(qName, async (msg) => {
         this.log(this.eLogLevel.trace, "rpc method start", [qName, msg]);
 
@@ -401,6 +405,84 @@ module.exports = class {
       throw err;
     } finally {
       this.log(this.eLogLevel.debug, "rpcServer created", [qName, cb]);
+    }
+  }
+
+  /**
+   * async rpcStrategy - initialize an RPC set of methods who follow strategy
+   *                     pattern through AMQP
+   *
+   * @param  {type} xName             function name
+   * @param  {type} cbStrategyChooser callback for the strategy chooser.
+   *                                  it has to retrieve back a selected
+   *                                  strategy to run
+   * @param  {type} cbStrategies      named array of callbacks. Each name is
+   *                                  an strategy and each function a possible
+   *                                  strategy to run
+   */   
+  async rpcStrategy(xName, cbStrategyChooser, cbStrategies) {
+    this.log(this.eLogLevel.trace, "rpcStrategy start", [xName,
+      cbStrategyChooser, cbStrategies]);
+    try {
+      var it = this;
+
+      await this.initExchange(xName, 'direct', false, true);
+      await this.initQueue(xName, false, null, null, true);
+      Object.keys(cbStrategies).forEach(async function(key, index) {
+        await it.rpcServer(xName + "_" + key, this[key]);
+        await it.subscribe(xName + "_" + key, xName, key);
+      }, cbStrategies);
+
+      this.ch.consume(xName, async (msg) => {
+        this.log(this.eLogLevel.trace, "rpcStrategy method start", [xName,
+          msg]);
+
+        var key, err = null;
+        try {
+          try {
+            this.log(this.eLogLevel.trace, "rpcStrategy method callback start",
+              [xName, msg]);
+            key = await cbStrategyChooser(JSON.parse(msg.content));
+            if (cbStrategies[key] == undefined)
+              throw "rule " + key + " not found";
+            this.ch.publish(xName, key, msg.content, {
+              correlationId: msg.properties.correlationId,
+              content_type: "application/json",
+              replyTo: msg.properties.replyTo
+            });
+          } catch (error) {
+            this.log(this.eLogLevel.warning, "rpcStrategy method callback "
+              + "failure",
+              [xName, null, error]);
+            err = error;
+
+            it.ch.sendToQueue(msg.properties.replyTo,
+              Buffer.from(JSON.stringify({
+                "msg": null,
+                "error": err
+              })), {
+                correlationId: msg.properties.correlationId,
+                content_type: "application/json"
+              });
+          }
+
+          it.ch.ack(msg);
+        } catch (error) {
+          this.log(this.eLogLevel.error, "rpcStrategy method failure",
+            [xName, msg, error]);
+          throw error;
+        } finally {
+          this.log(this.eLogLevel.debug, "rpcStrategy method called",
+            [xName, JSON.parse(msg.content), key, err]);
+        }
+      });
+    } catch (err) {
+      this.log(this.eLogLevel.error, "rpcStrategy failure", [xName,
+        cbStrategyChooser, cbStrategies, err]);
+      throw err;
+    } finally {
+      this.log(this.eLogLevel.debug, "rpcStrategy created", [xName,
+        cbStrategyChooser, cbStrategies]);
     }
   }
 
@@ -476,4 +558,8 @@ module.exports = class {
 
   // end region: rpc pattern
 
+  // region: rpc strategy pattern
+
+
+  // end region: rpc strategy pattern
 }

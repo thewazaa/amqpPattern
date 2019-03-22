@@ -3,10 +3,11 @@ amqp nodejs class to easily manage different kind of patterns with almost no cod
 
 logs are generated through tracer library(https://www.npmjs.com/package/tracer). Check tracer project to configurate your logs
 
-Right now it has 3 possible patterns managed
+Right now it has 4 possible patterns managed
 * fifo queue pattern (https://en.wikipedia.org/wiki/FIFO_(computing_and_electronics)
 * publish/subscribe pattern (https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern)
 * rpc pattern (https://en.wikipedia.org/wiki/Remote_procedure_call)
+* rpc with strategy pattern (https://en.wikipedia.org/wiki/Strategy_pattern)
 
 *Unit tests require to have rabbitMQ installed on local.*
 
@@ -105,6 +106,35 @@ var x = new amqp_pattern('amqp://localhost', logger);
 x.init().then(async () => {
   x.rpcServer("method", async (val) => {
     return val + 1;
+  });
+});
+```
+
+### rpc with strategy pattern
+Strategy pattern concept is to select the work to do in base an strategy chooser.
+Using amqr is a cool way to implement this pattern. If we at the same time want some rpc logic, then we can create some cool features.
+
+Call itself does not differ from rpc pattern one, so no explanation needed, here
+
+#### calls
+```javascript
+var x = new amqp_pattern('amqp://localhost', logger);
+x.init().then(async () => {
+  console.log(await x.rpcCall("method", 1));
+});
+```
+
+#### procedure
+```javascript
+var x = new amqp_pattern('amqp://localhost', logger);
+x.init().then(async () => {
+  x.rpcStrategy("method",  async (a) => {
+    if (a<50)
+      return "a";
+    return "b";
+  }, {
+    "a": async (a) => { return "a " + a;  },
+    "b": async (a) => { return "b " + a; }
   });
 });
 ```
